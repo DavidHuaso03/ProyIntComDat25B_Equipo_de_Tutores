@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5 Etapas de Gestión de Proyectos</title>
+    <!-- Fuentes modernas -->
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Colores estilo Trello / Moderno */
+            --bg-color: #0079bf; /* Azul Trello Clásico */
+            --list-bg: #ebecf0;
+            --card-bg: #ffffff;
+            --text-color: #172b4d;
+            --accent-1: #FF5733; /* Iniciación */
+            --accent-2: #FFC300; /* Planificación */
+            --accent-3: #2ECC71; /* Ejecución */
+            --accent-4: #3498DB; /* Control */
+            --accent-5: #8E44AD; /* Cierre */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            background-image: linear-gradient(135deg, #0079bf 0%, #5067c5 100%);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Evitar scroll feo durante la animación */
+        }
+
+        header {
+            padding: 20px 40px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 400;
+            margin-top: 5px;
+        }
+
+        /* Contenedor Principal (El Tablero) */
+        .board-container {
+            display: flex;
+            gap: 20px;
+            padding: 0 40px 40px 40px;
+            height: 100%;
+            overflow-x: auto; /* Scroll horizontal si es necesario */
+            align-items: flex-start;
+        }
+
+        /* Estilo de las Listas (Columnas) */
+        .stage-column {
+            background-color: var(--list-bg);
+            min-width: 300px;
+            width: 300px;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            opacity: 0; /* Para la animación de entrada */
+            transform: translateY(30px);
+            transition: transform 0.3s ease;
+        }
+
+        .stage-column:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Cabecera de la Columna */
+        .column-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 5px;
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+            padding-bottom: 10px;
+        }
+
+        .stage-number {
+            background: #333;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .column-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #172b4d;
+        }
+
+        /* Tarjetas de Contenido */
+        .card-content {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #444;
+            border-left: 5px solid transparent;
+        }
+
+        .card-content ul {
+            list-style-type: none;
+            padding-left: 5px;
+        }
+
+        .card-content li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .card-content li::before {
+            content: "•";
+            color: #888;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Colores Específicos por Etapa */
+        /* Etapa 1 */
+        .stage-1 .stage-number { background-color: var(--accent-1); }
+        .stage-1 .card-content { border-left-color: var(--accent-1); }
+        
+        /* Etapa 2 */
+        .stage-2 .stage-number { background-color: var(--accent-2); }
+        .stage-2 .card-content { border-left-color: var(--accent-2); }
+
+        /* Etapa 3 */
+        .stage-3 .stage-number { background-color: var(--accent-3); }
+        .stage-3 .card-content { border-left-color: var(--accent-3); }
+
+        /* Etapa 4 */
+        .stage-4 .stage-number { background-color: var(--accent-4); }
+        .stage-4 .card-content { border-left-color: var(--accent-4); }
+
+        /* Etapa 5 */
+        .stage-5 .stage-number { background-color: var(--accent-5); }
+        .stage-5 .card-content { border-left-color: var(--accent-5); }
+
+
+        /* Iconos grandes de fondo (Decorativo) */
+        .bg-icon {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            font-size: 3rem;
+            opacity: 0.1;
+            color: #000;
+        }
+
+        /* Animaciones */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <i class="fab fa-trello" style="font-size: 2.5rem;"></i>
+        <div>
+            <h1>Ciclo de Vida del Proyecto</h1>
+            <div class="subtitle">Metodología aplicada en Trello</div>
+        </div>
+    </header>
+
+    <div class="board-container">
+        
+        <!-- Etapa 1 -->
+        <div class="stage-column stage-1" style="animation: fadeInUp 0.6s forwards 0.2s;">
+            <div class="column-header">
+                <div class="stage-number">1</div>
+                <div class="column-title">Iniciación</div>
+            </div>
+            <div class="card-content">
+                <ul>
+                    <li>Definición del alcance, viabilidad, objetivos y costos.</li>
+                    <li>Establecimiento de una idea clara.</li>
+                    <li>Determinación de viabilidad (Go / No-Go).</li>
+                </ul>
+            </div>
+            <i class="fas fa-rocket bg-icon"></i>
+        </div>
+
+        <!-- Etapa 2 -->
+        <div class="stage-column stage-2" style="animation: fadeInUp 0.6s forwards 0.4s;">
+            <div class="column-header">
+                <div class="stage-number">2</div>
+                <div class="column-title">Planeación</div>
+            </div>
+            <div class="card-content">
+                <ul>
+                    <li>Creación de la hoja de ruta detallada.</li>
+                    <li>Definición de tareas, recursos y metodología.</li>
+                    <li>Estructuración del plan de acción.</li>
+                </ul>
+            </div>
+            <i class="fas fa-map-marked-alt bg-icon"></i>
+        </div>
+
+        <!-- Etapa 3 -->
+        <div class="stage-column stage-3" style="animation: fadeInUp 0.6s forwards 0.6s;">
+            <div class="column-header">
+                <div class="stage-number">3</div>
+                <div class="column-title">Ejecución</div>
+            </div>
+            <div class="card-content">
+                <ul>
+                    <li>Puesta en marcha de tareas planificadas.</li>
+                    <li>Implementación del plan de trabajo.</li>
+                    <li>Uso activo de recursos y asignación de equipo.</li>
+                </ul>
+            </div>
+            <i class="fas fa-cogs bg-icon"></i>
+        </div>
+
+        <!-- Etapa 4 -->
+        <div class="stage-column stage-4" style="animation: fadeInUp 0.6s forwards 0.8s;">
+            <div class="column-header">
+                <div class="stage-number">4</div>
+                <div class="column-title">Seguimiento y Control</div>
+            </div>
+            <div class="card-content">
+                <ul>
+                    <li>Monitoreo del progreso y rendimiento.</li>
+                    <li>Aseguramiento de cumplimiento de objetivos.</li>
+                    <li>Identificación de desviaciones y medidas correctivas.</li>
+                </ul>
+            </div>
+            <i class="fas fa-chart-pie bg-icon"></i>
+        </div>
+
+        <!-- Etapa 5 -->
+        <div class="stage-column stage-5" style="animation: fadeInUp 0.6s forwards 1s;">
+            <div class="column-header">
+                <div class="stage-number">5</div>
+                <div class="column-title">Cierre</div>
+            </div>
+            <div class="card-content">
+                <ul>
+                    <li>Finalización de entregables pendientes.</li>
+                    <li>Cierre de contratos y pagos.</li>
+                    <li>Revisión de lecciones aprendidas (Retrospectiva).</li>
+                </ul>
+            </div>
+            <i class="fas fa-flag-checkered bg-icon"></i>
+        </div>
+
+    </div>
+
+</body>
+</html>
